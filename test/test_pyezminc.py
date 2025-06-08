@@ -159,7 +159,7 @@ class TestIterator(unittest.TestCase):
         it_out = minc.output_iterator_real(self.tmp, reference_file=self.fname)
         for i in it_in:
             it_out.value(i)
-            it_out.next()
+            next(it_out)
         # compare now
         del it_out
         del it_in
