@@ -216,11 +216,12 @@ class TestLabel(unittest.TestCase):
             self.img.regions_volume()[k]
             for k in sorted(self.img.regions_volume().keys())
         ]
+        output = check_call_out(["print_all_labels", self.fname])
+        if isinstance(output, bytes):
+            output = output.decode('utf-8')
         volume_c = [
             float(i.split(" ")[2])
-            for i in check_call_out("print_all_labels {}".format(self.fname))
-            .rstrip("\n")
-            .split("\n")
+            for i in output.rstrip("\n").split("\n")
         ]
         self.assertEqual(volume_py, volume_c)
 
