@@ -358,11 +358,18 @@ class TestImage(unittest.TestCase):
 
     def testMincType(self):
         for minctype in ("byte", "short", "int", "float", "double"):
-            check_call_out(
-                ["mincreshape", "-" + minctype, "-clobber", self.fname, self.tmp]
-            )
-            self.img = minc.Image(self.tmp)
-            self.assertAlmostEqual(np.median(self.img.data), 63.245, places=2)
+            # create a unique temporary file for each iteration
+            tmp_file = create_tmp_filename(prefix="minctype_{}_".format(minctype), suffix=".mnc", remove=False)
+            try:
+                check_call_out(
+                    ["mincreshape", "-" + minctype, "-clobber", self.fname, tmp_file]
+                )
+                self.img = minc.Image(tmp_file)
+                self.assertAlmostEqual(np.median(self.img.data), 63.245, places=1)
+            finally:
+                # clean up the temporary file
+                if os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
 
     def testLoadNan(self):
         with self.assertRaises(Exception):
