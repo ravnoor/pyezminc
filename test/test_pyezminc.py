@@ -344,7 +344,7 @@ class TestImage(unittest.TestCase):
     def testMedian(self):
         self.assertAlmostEqual(
             np.median(self.img.data), 63.23888279, places=3
-        )  # median in minstats is different
+        )  # median in mincstats is different
 
     def testVariance(self):
         self.assertAlmostEqual(np.var(self.img.data, ddof=1), 558.4608597)
