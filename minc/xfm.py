@@ -4,17 +4,26 @@ import scipy as sp
 import numpy as np
 import scipy.linalg as spl
 import time
-import shutil
 
-from pyezminc import read_xfm, write_xfm, xfm_to_param, param_to_xfm, \
-    xfm_entry, xfm_param, xfm_identity, xfm_identity_transform_par
+from pyezminc import (
+    read_xfm,
+    write_xfm,
+    xfm_to_param,
+    param_to_xfm,
+    xfm_entry,
+    xfm_identity,
+    xfm_identity_transform_par,
+)
 
 
 class XFM(object):
     """
     Class to deal with XFM files
     """
-    def __init__(self, fname=None, xfm_matrix=None, displacement_volume=None, invert=True):
+
+    def __init__(
+        self, fname=None, xfm_matrix=None, displacement_volume=None, invert=True
+    ):
         """
         Returns an XFM object.
         Takes as input either an XFM filaneme (fname) or a data array (data).
@@ -37,7 +46,7 @@ class XFM(object):
         self.from_file = False
         self.fname = fname
         self.parameter_extracted = False
-        self.parameter_changed   = False
+        self.parameter_changed = False
         self.par = xfm_identity_transform_par()
         self.xfm = xfm_identity()
         self.history = []
@@ -46,9 +55,9 @@ class XFM(object):
             self.load(self.fname)
         else:
             if xfm_matrix:
-                self.update_xfm_matrix(xfm_matrix,invert=invert)
+                self.update_xfm_matrix(xfm_matrix, invert=invert)
             if displacement_volume:
-                self.update_nl_deformation(displacement_volume,invert=invert)
+                self.update_nl_deformation(displacement_volume, invert=invert)
                 self.has_non_linear = True
                 self.displacement_volume = displacement_volume
 
@@ -59,12 +68,12 @@ class XFM(object):
         :return:
         """
         if xfm_matrix:
-            self.xfm = [ xfm_entry(True,False,np.asarray(xfm_matrix)) ]
+            self.xfm = [xfm_entry(True, False, np.asarray(xfm_matrix))]
             self.from_file = False
             self.parameter_extracted = False
             self.parameter_changed = False
 
-    def update_nl_deformation(self,grid=None, invert=False):
+    def update_nl_deformation(self, grid=None, invert=False):
         """
         Set non-linear transform given grid file
         :param grid: _grid file
@@ -75,7 +84,7 @@ class XFM(object):
             self.xfm = [xfm_entry(False, invert, grid)]
             self.from_file = False
             self.parameter_extracted = False
-            self.parameter_changed  = False
+            self.parameter_changed = False
 
     def load(self, input_filename):
         """
@@ -84,7 +93,7 @@ class XFM(object):
         :return:
         """
         if not os.path.exists(input_filename):
-            raise IOError('file does not exist', input_filename)
+            raise IOError("file does not exist", input_filename)
         self.from_file = True
         self.xfm = read_xfm(input_filename)
         self.parameter_extracted = False
@@ -176,10 +185,8 @@ class XFM(object):
         self.parameter_changed = True
 
     def append_history(self, content):
-        h = [time.strftime('%a %b %d %H:%M:%S %Y'),
-             '>>> ',
-             content]
-        self.history.append(string.join(h, sep=''))
+        h = [time.strftime("%a %b %d %H:%M:%S %Y"), ">>> ", content]
+        self.history.append(string.join(h, sep=""))
 
     def sqrt(self):
         """
@@ -189,8 +196,8 @@ class XFM(object):
         if self.parameter_changed:
             self._set_parameters()
         self._check_linear()
-        assert(len(self.xfm)==1 and self.xfm[0].lin)
-        return XFM(xfm_matrix = spl.sqrtm(self.xfm[0].trans).real)
+        assert len(self.xfm) == 1 and self.xfm[0].lin
+        return XFM(xfm_matrix=spl.sqrtm(self.xfm[0].trans).real)
 
     def inv(self):
         """
@@ -200,7 +207,7 @@ class XFM(object):
         if self.parameter_changed:
             self._set_parameters()
         self._check_linear()
-        assert(len(self.par)==1 and self.par[0].lin)
+        assert len(self.par) == 1 and self.par[0].lin
         return XFM(xfm_matrix=spl.inv(self.matrix))
 
     def avg(self, xfms):
@@ -218,7 +225,7 @@ class XFM(object):
         for x in xfms:
             x._check_linear()
             R += spl.logm(x.par[0].trans)
-        R/=len(xfms)+1
+        R /= len(xfms) + 1
         R = spl.expm(R)
         R = sp.real(E)
         return XFM(xfm_matrix=R)
@@ -243,21 +250,21 @@ class XFM(object):
         return XFM(xfm_matrix=C)
 
     def determinant(self):
-        """ Return the determinant of the XFM array, assume linear transform """
+        """Return the determinant of the XFM array, assume linear transform"""
         self._check_linear()
         return spl.det(self.matrix)
 
     def _set_parameters(self):
-        self.xfm=param_to_xfm(self.par)
+        self.xfm = param_to_xfm(self.par)
         self.parameter_changed = False
         self.parameter_extracted = True
 
     def _extract_parameters(self):
         self._check_linear()
-        self.par=xfm_to_param(self.xfm)
+        self.par = xfm_to_param(self.xfm)
         self.parameter_changed = False
         self.parameter_extracted = True
 
     def _check_linear(self):
-        if len(self.xfm)!=1 or not self.xfm[0].lin:
+        if len(self.xfm) != 1 or not self.xfm[0].lin:
             raise Exception("Only single linear transform is supported")
