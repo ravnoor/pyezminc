@@ -37,8 +37,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        # with:
-        #   fetch-depth: 2
+        with:
+          fetch-depth: 2
 
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.33
