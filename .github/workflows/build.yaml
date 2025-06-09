@@ -45,7 +45,7 @@ jobs:
         with:
           # needs to be unique for each matrix entry
           artifact-name: pyezminc-${{ matrix.target-platform }}
-          build-args: ${{ matrix.build-args }} --experimental --package-format conda:22 --output-dir /tmp/rattler-pyezminc-${{ matrix.target-platform }}/
+          build-args: ${{ matrix.build-args }} --experimental --package-format conda:22 --channel conda-forge --channel https://repo.prefix.dev/nrx-forge --output-dir /tmp/rattler-pyezminc-${{ matrix.target-platform }}/
           recipe-path: conda/recipe.yaml
         env:
           PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
