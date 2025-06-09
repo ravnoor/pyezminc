@@ -40,6 +40,11 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Authenticate with private channel on repo.prefix.dev
+        run: |
+          echo '{"repo.prefix.dev": {"CondaToken": "${{ secrets.PREFIX_API_KEY }}"}}' > ${{ runner.temp }}/credentials.json
+          echo "RATTLER_AUTH_FILE=${{ runner.temp }}/credentials.json" >> $GITHUB_ENV
+
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.33
         with:
@@ -47,8 +52,6 @@ jobs:
           artifact-name: pyezminc-${{ matrix.target-platform }}
           build-args: ${{ matrix.build-args }} --experimental --package-format conda:22 --channel conda-forge --channel https://repo.prefix.dev/nrx-forge --output-dir /tmp/rattler-pyezminc-${{ matrix.target-platform }}/
           recipe-path: conda/recipe.yaml
-        env:
-          PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
 
       - name: Upload package
         shell: bash
