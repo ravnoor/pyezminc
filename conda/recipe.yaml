@@ -4,6 +4,7 @@ context:
   name: pyezminc
   version: 1.3.01
   src_path: ../
+  git_repo: https://github.com/ravnoor/pyezminc
   # git_commit_hash: ${{ git.head_rev( git_repo ) }}
 
 package:
@@ -11,10 +12,10 @@ package:
   version: ${{ version }}
 
 source:
-  path: ${{ src_path }}
-  # git: ${{ git_repo }}
+  # path: ${{ src_path }}
+  git: ${{ git_repo }}
   # rev: ${{ git_commit_hash }}
-  # branch: main
+  branch: main
 
 build:
   # number: 3
