@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target-platform: linux-64
             build-args: --target-platform linux-64
           # - os: ubuntu-24.04-arm
