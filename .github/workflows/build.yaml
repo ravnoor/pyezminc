@@ -47,7 +47,10 @@ jobs:
           artifact-name: pyezminc-${{ matrix.target-platform }}
           build-args: ${{ matrix.build-args }}
       - run: |
+          mkdir -p /tmp/rattler-pyezminc-${{ matrix.target-platform }}/
           rattler-build build --experimental --recipe ./conda --package-format conda:22 --output-dir /tmp/rattler-pyezminc-${{ matrix.target-platform }}/
+        env:
+          PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
 
       - name: Upload package
         shell: bash
